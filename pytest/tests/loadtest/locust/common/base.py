@@ -511,7 +511,7 @@ class NearNodeProxy:
                         "signed_tx_base64":
                             base64.b64encode(serialized_tx).decode('utf8'),
                         "wait_until":
-                            "NONE"
+                            "EXECUTED_OPTIMISTIC"
                     })
                 meta["response_length"] = len(submit_raw_response.text)
                 submit_response = json.loads(submit_raw_response.text)
