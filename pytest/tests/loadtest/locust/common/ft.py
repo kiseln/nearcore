@@ -87,27 +87,34 @@ class FTContract:
         assert prefix_len > 4, f"user key {parent.key.account_id} is too long"
         chars = string.ascii_lowercase + string.digits
 
+        def create_account_id(i):
+            prefix = ''.join(random.Random(i).choices(chars, k=prefix_len))
+            account_id = f"{prefix}.{parent.key.account_id}"
+            return account_id
+
         def create_account(i):
             prefix = ''.join(random.Random(i).choices(chars, k=prefix_len))
             account_id = f"{prefix}.{parent.key.account_id}"
             return Account(key.Key.from_seed_testonly(account_id))
 
         with futures.ThreadPoolExecutor(max_workers=4) as executor:
-            batch_size = 500
+            batch_size = 10000
             num_batches = (num + batch_size - 1) // batch_size
             for i in range(num_batches):
-                accounts = [
-                    create_account(i)
-                    for i in range(i * batch_size, min((i + 1) *
-                                                       batch_size, num))
-                ]
-                node.prepare_accounts(accounts,
-                                      parent,
-                                      balance=1,
-                                      msg="create passive user")
-                futures.wait(
-                    executor.submit(self.register_passive_user, node, account)
-                    for account in accounts)
+                for index in range(i * batch_size, min((i + 1) * batch_size, num)):
+                    self.registered_users.append(create_account_id(index))
+                # accounts = [
+                #     create_account(i)
+                #     for i in range(i * batch_size, min((i + 1) *
+                #                                        batch_size, num))
+                # ]
+                # node.prepare_accounts(accounts,
+                #                       parent,
+                #                       balance=1,
+                #                       msg="create passive user")
+                # futures.wait(
+                #     executor.submit(self.register_passive_user, node, account)
+                #     for account in accounts)
                 logging.info(
                     f"{parent.key.account_id}: Processed batch {i + 1}/{num_batches}, created {(i + 1) * batch_size} users"
                 )
