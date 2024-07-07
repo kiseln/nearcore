@@ -1713,8 +1713,8 @@ pub enum TxExecutionStatus {
 #[derive(BorshSerialize, BorshDeserialize, serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum FinalExecutionOutcomeViewEnum {
-    FinalExecutionOutcome(FinalExecutionOutcomeView),
     FinalExecutionOutcomeWithReceipt(FinalExecutionOutcomeWithReceiptView),
+    FinalExecutionOutcome(FinalExecutionOutcomeView),
 }
 
 impl FinalExecutionOutcomeViewEnum {
